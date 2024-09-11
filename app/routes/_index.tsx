@@ -1,48 +1,35 @@
-import type { MetaFunction } from "@remix-run/node";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+import { useState } from "react";
+import Board from "~/components/Board";
+import {
+  flipDiscs,
+  initialBoard,
+  isValidMove,
+  getValidMoves,
+} from "~/gameLogic";
 
 export default function Index() {
+  const [board, setBoard] = useState(initialBoard);
+  const [currentPlayer, setCurrentPlayer] = useState("B");
+
+  const handleClick = (row: number, col: number) => {
+    if (!isValidMove(board, row, col, currentPlayer)) return;
+
+    const newBoard = flipDiscs(board, row, col, currentPlayer);
+    setBoard(newBoard);
+    setCurrentPlayer(currentPlayer === "B" ? "W" : "B");
+  };
+
+  const validMoves = getValidMoves(board, currentPlayer);
+
   return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
-          >
-            5m Quick Start
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div>
+      <h1>Othello Game</h1>
+      <Board
+        board={board}
+        currentPlayer={currentPlayer}
+        handleClick={handleClick}
+        validMoves={validMoves}
+      />
     </div>
   );
 }
